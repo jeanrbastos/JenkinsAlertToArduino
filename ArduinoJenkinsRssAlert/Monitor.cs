@@ -20,10 +20,10 @@ namespace ArduinoJenkinsRssAlert
         {
             while (!token.IsCancellationRequested)
             {
-                var feed = await AnalizarAsync(url);
-                ReceberFeeds?.Invoke(feed);
-
                 Thread.Sleep(5000);
+
+                var feed = await AnalizarAsync(url);
+                ReceberFeeds?.Invoke(feed);                
             }
         }
 

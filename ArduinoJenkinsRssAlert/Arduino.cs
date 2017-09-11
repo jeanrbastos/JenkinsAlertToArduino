@@ -5,6 +5,7 @@ namespace ArduinoJenkinsRssAlert
 {
     public class Arduino
     {
+        private object _lock = new object();
         private SerialPort _serial;
 
         public Arduino(string nomePorta)
@@ -30,43 +31,49 @@ namespace ArduinoJenkinsRssAlert
 
         public void Sucesso()
         {
-            try
+            lock (_lock)
             {
-                Abrir();
-                Enviar(250);
-                Thread.Sleep(500);
-                Enviar(1);
-                Thread.Sleep(500);
-            }
-            finally
-            {
-                Fechar();
+                try
+                {
+                    Abrir();
+                    Enviar(250);
+                    Thread.Sleep(500);
+                    Enviar(1);
+                    Thread.Sleep(500);
+                }
+                finally
+                {
+                    Fechar();
+                }
             }
         }
 
         public void Falha()
         {
-            try
+            lock (_lock)
             {
-                Abrir();
-                Enviar(200);
-                Thread.Sleep(500);
-                Enviar(180);
-                Thread.Sleep(500);
-                Fechar();
-            }
-            finally
-            {
-                Fechar();
+                try
+                {
+                    Abrir();
+                    Enviar(200);
+                    Thread.Sleep(500);
+                    Enviar(180);
+                    Thread.Sleep(500);
+                }
+                finally
+                {
+                    Fechar();
+                }
             }
         }
 
         private void Enviar(int graus)
         {
-            if (_serial.IsOpen)
-            {
-                _serial.WriteLine(graus.ToString());
-            }
+           
+                if (_serial.IsOpen)
+                {
+                    _serial.WriteLine(graus.ToString());
+                }
         }
     }
 }
