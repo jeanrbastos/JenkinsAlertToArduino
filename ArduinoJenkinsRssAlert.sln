@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.12
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoJenkinsRssAlert", "ArduinoJenkinsRssAlert\ArduinoJenkinsRssAlert.csproj", "{CB2E0670-DAFF-4D1F-A7B4-5AE8FE6390E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoJenkinsAlert", "ArduinoJenkinsRssAlert\ArduinoJenkinsAlert.csproj", "{CB2E0670-DAFF-4D1F-A7B4-5AE8FE6390E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

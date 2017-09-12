@@ -1,8 +1,10 @@
-﻿using ArduinoJenkinsRssAlert.Modelo.Atom;
+﻿using ArduinoJenkinsAlert.Modelo;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
-namespace ArduinoJenkinsRssAlert
+namespace ArduinoJenkinsAlert
 {
     class Program
     {
@@ -11,9 +13,6 @@ namespace ArduinoJenkinsRssAlert
 
         static void Main(string[] args)
         {
-            //https://ci.jenkins.io/rssFailed
-            //https://ci.jenkins.io/rssLatest
-
             var cancelar = new CancellationTokenSource();
 
             var monitor = new Monitor();
@@ -22,32 +21,32 @@ namespace ArduinoJenkinsRssAlert
 
             _arduino = new Arduino(args[1]);
             _arduino.Inicializar();
-            
+
             Console.Read();
             cancelar.Cancel();
         }
 
-        static void Receber(Feed feed)
+        static void Receber(List<Job> jobs)
         {
-            // Verifica se a situação mudou...
-            var quebrou = feed.Entry.Count > 0;
+            // Percorre todos os jobs se algum diferente de 'blue' está com falha
+            var quebrou = jobs.Where(item => item.Cor != "disabled")
+                              .Any(item => !item.Cor.Contains("blue"));
 
+            // Só aciona o robo se mudou a situação...
             if (situacaoAtualQuebrado == quebrou)
             {
                 return;
             }
-            situacaoAtualQuebrado = quebrou;
 
+            situacaoAtualQuebrado = quebrou;
             if (quebrou)
             {
-                foreach (var item in feed.Entry)
-                {
-                    Console.Write(item.Title);
-                }
+                Console.WriteLine("Falha");
                 _arduino.Falha();
             }
             else
             {
+                Console.WriteLine("Ambiente restaurado");
                 _arduino.Sucesso();
             }
         }

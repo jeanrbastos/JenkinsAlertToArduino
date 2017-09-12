@@ -1,16 +1,16 @@
-﻿using ArduinoJenkinsRssAlert.Modelo.Atom;
-using System.IO;
+﻿using ArduinoJenkinsAlert.Modelo;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
-namespace ArduinoJenkinsRssAlert
+namespace ArduinoJenkinsAlert
 {
     public class Monitor
     {
-        public delegate void FeedDelegate(Feed Feed);
+        public delegate void FeedDelegate(List<Job> jobs);
+
         public event FeedDelegate ReceberFeeds;
 
         /// <summary>
@@ -22,27 +22,33 @@ namespace ArduinoJenkinsRssAlert
             {
                 Thread.Sleep(5000);
 
-                var feed = await AnalizarAsync(url);
-                ReceberFeeds?.Invoke(feed);                
+                var jobs = await AnalizarAsync(url);
+                ReceberFeeds?.Invoke(jobs);
             }
         }
 
         /// <summary>
         /// Busca jobs quebrados
         /// </summary>
-        private async Task<Feed> AnalizarAsync(string url)
+        private async Task<List<Job>> AnalizarAsync(string url)
         {
             var cliente = new HttpClient();
-            var feedXml = await cliente.GetStringAsync(url);
-            var buffer = Encoding.UTF8.GetBytes(feedXml);
+            var json = await cliente.GetStringAsync(url);
 
-            var serializador = new XmlSerializer(typeof(Feed));
-            using (var leitor = new MemoryStream(buffer))
+            dynamic consulta = JsonConvert.DeserializeObject(json);
+
+            var saida = new List<Job>();
+            foreach (var item in consulta.jobs)
             {
-                var feed = (Feed)serializador.Deserialize(leitor);
-
-                return feed;
+                var novo = new Job()
+                {
+                    Nome = item.name,
+                    Cor = item.color
+                };
+                saida.Add(novo);
             }
+
+            return saida;
         }
     }
 }
