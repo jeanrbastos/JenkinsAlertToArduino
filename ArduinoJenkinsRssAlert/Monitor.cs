@@ -32,23 +32,30 @@ namespace ArduinoJenkinsAlert
         /// </summary>
         private async Task<List<Job>> AnalizarAsync(string url)
         {
-            var cliente = new HttpClient();
-            var json = await cliente.GetStringAsync(url);
-
-            dynamic consulta = JsonConvert.DeserializeObject(json);
-
-            var saida = new List<Job>();
-            foreach (var item in consulta.jobs)
+            try
             {
-                var novo = new Job()
-                {
-                    Nome = item.name,
-                    Cor = item.color
-                };
-                saida.Add(novo);
-            }
+                var cliente = new HttpClient();
+                var json = await cliente.GetStringAsync(url);
 
-            return saida;
+                dynamic consulta = JsonConvert.DeserializeObject(json);
+
+                var saida = new List<Job>();
+                foreach (var item in consulta.jobs)
+                {
+                    var novo = new Job()
+                    {
+                        Nome = item.name,
+                        Cor = item.color
+                    };
+                    saida.Add(novo);
+                }
+
+                return saida;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
